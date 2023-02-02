@@ -15,6 +15,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -25,10 +27,12 @@ public class AvatarService {
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
 
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
     private final AvatarRepository avatarRepository;
 
     private final StudentService studentService;
+
+    private final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     public AvatarService(StudentRepository studentRepository, AvatarRepository avatarRepository, StudentService studentService) {
 
@@ -38,10 +42,13 @@ public class AvatarService {
     }
 
     public Avatar findAvatar(long studentId) {
+        logger.debug("Calling method findAvatar (studentId = {})", studentId);
+
         return avatarRepository.findByStudentId(studentId).orElseThrow();
     }
 
     public void uploadAvatar(Long studentId, MultipartFile file) throws IOException {
+        logger.debug("Calling method uploadAvatar (studentId = {})", studentId);
         Student student = studentService.findStudent(studentId);
 
         Path filePath = Path.of(avatarsDir, studentId + "." + getExtension(file.getOriginalFilename()));
@@ -69,12 +76,10 @@ public class AvatarService {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
-    public ResponseEntity<Collection<Avatar>> getAll(Integer pageNumber, Integer pageSize) {
+    public Collection<Avatar> getAll(Integer pageNumber, Integer pageSize) {
+        logger.debug("Calling method findByPagination (page = {}, size = {})", pageNumber, pageSize);
         PageRequest pageRequest = PageRequest.of(pageNumber-1, pageSize);
-        Collection<Avatar> avtarList = avatarRepository.findAll(pageRequest).getContent();
-        if (avtarList.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(avtarList);
+        Collection<Avatar> avatarList = avatarRepository.findAll(pageRequest).getContent();
+        return avatarList;
     }
 }

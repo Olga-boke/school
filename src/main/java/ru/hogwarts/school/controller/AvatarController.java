@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import liquibase.pro.packaged.R;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 @RestController
+@RequestMapping("/avatar")
 public class AvatarController {
 
     private final StudentService studentService;
@@ -34,11 +36,14 @@ public class AvatarController {
     public ResponseEntity<Collection<Avatar>> getAll(@RequestParam("page") Integer pageNumber,
                                                      @RequestParam("size") Integer pageSize){
 
-       return avatarService.getAll(pageNumber, pageSize);
+        if (avatarService.getAll(pageNumber, pageSize).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(avatarService.getAll(pageNumber, pageSize));
 
     }
 
-    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable Long id, @RequestParam MultipartFile avatar) throws IOException {
         if (avatar.getSize() > 1024 * 300) {
             return ResponseEntity.badRequest().body("File is too big");
@@ -48,7 +53,7 @@ public class AvatarController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/{id}/avatar/preview")
+    @GetMapping(value = "/{id}/preview")
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id);
 
@@ -59,7 +64,7 @@ public class AvatarController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
 
-    @GetMapping(value = "/{id}/avatar")
+    @GetMapping("/{id}")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(id);
 

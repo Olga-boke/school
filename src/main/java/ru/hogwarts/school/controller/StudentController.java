@@ -56,7 +56,7 @@ public class StudentController {
     public double getAverageAgeOfAllStudents(){
         return studentService.getAverageAgeOfAllStudents();
     }
-    @GetMapping("/get-last-five-students()")
+    @GetMapping("/get-last-five-students")
     public Collection<Student> getLastFiveStudents(){
         return studentService.getLastFiveStudents();
     }
