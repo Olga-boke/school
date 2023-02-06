@@ -1,18 +1,11 @@
 package ru.hogwarts.school.controller;
 
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
@@ -95,7 +86,18 @@ public class StudentController {
     }
     @GetMapping("/{id}/faculty")
     public Faculty getFacultyByStudent(@PathVariable long id){
-        return studentService.getFacultyByStudent(id);}
+        return studentService.getFacultyByStudent(id);
+    }
+
+    @GetMapping("/names/{letter}")
+    public ResponseEntity<List<String>> getNamesStartingWithA(@PathVariable String letter) {
+        return ResponseEntity.ok(StudentService.getNameStarWithA(letter));
+    }
+
+    @GetMapping("/studentage")
+    public Double getAverageAgeByStreamApi() {
+        return StudentService.getAverageAgeByStreamApi();
+    }
 
 
 }

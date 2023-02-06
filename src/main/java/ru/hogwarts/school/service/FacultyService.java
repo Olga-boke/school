@@ -3,12 +3,15 @@ package ru.hogwarts.school.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class FacultyService {
@@ -55,5 +58,13 @@ public class FacultyService {
         logger.debug("Calling method getStudentsByFaculty(facultyId={})",id);
         Faculty faculty = findFaculty(id);
         return studentRepository.findAllByFaculty_Id(faculty.getId());
+    }
+
+    public String getTheLongestFacultyName() {
+        List<Faculty> faculties = facultyRepository.findAll();
+        return faculties.stream()
+                .max(Comparator.comparingInt(e -> e.getName().length()))
+                .orElseThrow(() -> new NotFoundException("faculty is not"))
+                .getName();
     }
 }
