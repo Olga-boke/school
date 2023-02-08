@@ -99,5 +99,16 @@ public class StudentController {
         return StudentService.getAverageAgeByStreamApi();
     }
 
+    @GetMapping("/namesThread")
+    public void getThreadStudentNames() {
+        studentService.getThreadStudentNames();
+    }
+    @GetMapping("/names-sync")
+    public void getThreadAllStudentNamesSync() {
+        studentService.threadAllStudentNamesSync();
+    }
 
 }
+
+
+

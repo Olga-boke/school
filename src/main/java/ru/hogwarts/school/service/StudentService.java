@@ -1,7 +1,9 @@
 package ru.hogwarts.school.service;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,11 +14,15 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import static java.util.Collections.singletonList;
+
 @Service
 public class StudentService {
 
-    private final StudentRepository studentRepository;
+    private static StudentRepository studentRepository;
     private final Logger logger = LoggerFactory.getLogger(StudentService.class);
+
+    public int count = 0;
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
@@ -86,4 +92,48 @@ public class StudentService {
                 .average()
                 .getAsDouble();
     }
+
+    public void getThreadStudentNames() {
+        List<String> studentsNames = studentRepository.findAll().stream()
+                .map(Student::getName)
+                .collect(Collectors.toList());
+        System.out.println(studentsNames.get(0));
+        System.out.println(studentsNames.get(1));
+
+
+        new Thread(() -> {
+            System.out.println(studentsNames.get(2));
+            System.out.println(studentsNames.get(3));
+        }).start();
+        new Thread(() -> {
+            System.out.println(studentsNames.get(4));
+            System.out.println(studentsNames.get(5));
+        }).start();
+    }
+
+        public void threadAllStudentNamesSync() {
+            List<String> studentsNames = studentRepository.findAll().stream()
+                    .map(Student::getName)
+                    .collect(Collectors.toList());
+
+            printToConsoleSync(List.of(studentsNames.get(0)));
+            printToConsoleSync(List.of(studentsNames.get(1)));
+
+
+            new Thread(() -> {
+                printToConsoleSync(List.of(studentsNames.get(2)));
+                printToConsoleSync(List.of(studentsNames.get(3)));
+            }).start();
+
+            new Thread(() -> {
+                printToConsoleSync(List.of(studentsNames.get(4)));
+                printToConsoleSync(List.of(studentsNames.get(5)));
+            }).start();
+        }
+
+        public synchronized void printToConsoleSync(List<String> studentsNames) {
+            System.out.println(studentsNames.get(count));
+            count++;
+        }
 }
+
