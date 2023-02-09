@@ -116,18 +116,18 @@ public class StudentService {
                     .map(Student::getName)
                     .collect(Collectors.toList());
 
-            printToConsoleSync(List.of(studentsNames.get(0)));
-            printToConsoleSync(List.of(studentsNames.get(1)));
+            printToConsoleSync(studentsNames);
+            printToConsoleSync(studentsNames);
 
 
             new Thread(() -> {
-                printToConsoleSync(List.of(studentsNames.get(2)));
-                printToConsoleSync(List.of(studentsNames.get(3)));
+                printToConsoleSync(studentsNames);
+                printToConsoleSync(studentsNames);
             }).start();
 
             new Thread(() -> {
-                printToConsoleSync(List.of(studentsNames.get(4)));
-                printToConsoleSync(List.of(studentsNames.get(5)));
+                printToConsoleSync(studentsNames);
+                printToConsoleSync(studentsNames);
             }).start();
         }
 
